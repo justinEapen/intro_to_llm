@@ -9,8 +9,12 @@ import random
 def load_data() -> dict:
 	data_dir = os.path.join(os.path.dirname(__file__), 'data')
 	json_path = os.path.join(data_dir, 'all_weeks_assignments.json')
+	prev_year_path = os.path.join(data_dir, 'prev_year_assignments.json')
 	csv_path = os.path.join(data_dir, 'All_Weeks_Questions.csv')
 
+	weeks: dict = {}
+	
+	# Load current year assignments
 	if os.path.exists(json_path):
 		with open(json_path, 'r', encoding='utf-8') as f:
 			raw = json.load(f)
@@ -18,12 +22,33 @@ def load_data() -> dict:
 			# 1) {'weeks': {'Week 1': [questions], ...}}
 			# 2) {'course': ..., 'assignments': [{ 'week': 1, 'questions': [...]}, ...]}
 			if isinstance(raw, dict) and 'weeks' in raw:
-				return raw
-			weeks: dict = {}
+				weeks.update(raw['weeks'])
+			else:
+				assignments = raw.get('assignments', []) if isinstance(raw, dict) else []
+				for a in assignments:
+					week_num = a.get('week')
+					week_key = f"Week {week_num}" if week_num is not None else str(a.get('title', 'Week'))
+					qs = []
+					for q in a.get('questions', []):
+						q_type = q.get('question_type', 'MCQ')
+						qs.append({
+							'question_text': q.get('question_text', ''),
+							'options': q.get('options', []),
+							'question_type': q_type,
+							'correct_answers': q.get('correct_answers') if q_type == 'MSQ' else None,
+							'correct_answer': q.get('correct_answer'),
+							'points': q.get('points', 1),
+						})
+					weeks.setdefault(week_key, []).extend(qs)
+	
+	# Load previous year assignments
+	if os.path.exists(prev_year_path):
+		with open(prev_year_path, 'r', encoding='utf-8') as f:
+			raw = json.load(f)
 			assignments = raw.get('assignments', []) if isinstance(raw, dict) else []
 			for a in assignments:
 				week_num = a.get('week')
-				week_key = f"Week {week_num}" if week_num is not None else str(a.get('title', 'Week'))
+				week_key = f"Week {week_num}-p" if week_num is not None else str(a.get('title', 'Week')) + "-p"
 				qs = []
 				for q in a.get('questions', []):
 					q_type = q.get('question_type', 'MCQ')
@@ -36,10 +61,10 @@ def load_data() -> dict:
 						'points': q.get('points', 1),
 					})
 				weeks.setdefault(week_key, []).extend(qs)
-			return {'weeks': weeks}
-	elif os.path.exists(csv_path):
+	
+	# Fallback to CSV if no JSON files found
+	if not weeks and os.path.exists(csv_path):
 		df = pd.read_csv(csv_path)
-		weeks = {}
 		for _, row in df.iterrows():
 			week = str(row['Week']).strip()
 			question_text = str(row['Question']).strip()
@@ -56,9 +81,8 @@ def load_data() -> dict:
 				'correct_answer': correct[0].strip() if q_type == 'MCQ' else None,
 				'points': 1,
 			})
-		return {'weeks': weeks}
-	else:
-		return {'weeks': {}}
+	
+	return {'weeks': weeks}
 
 
 
