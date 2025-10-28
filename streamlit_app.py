@@ -245,21 +245,50 @@ def main():
 		st.info("Add your CSV or JSON under data/ and refresh.")
 		return
 
-	# Sidebar week selection (numeric labels)
-	def week_num(w):
-		return int(''.join(filter(str.isdigit, w))) if any(c.isdigit() for c in w) else w
-	weeks = sorted(weeks, key=lambda w: (week_num(w), w))
-	numeric_weeks = [week_num(w) for w in weeks]
+	# Sidebar week selection (separate current and previous year)
+	def week_sort_key(w):
+		# Extract number and type (current vs previous)
+		if '-p' in w:
+			num = int(''.join(filter(str.isdigit, w)))
+			return (num, 1)  # Previous year comes after current
+		else:
+			num = int(''.join(filter(str.isdigit, w)))
+			return (num, 0)  # Current year comes first
+	
+	weeks = sorted(weeks, key=week_sort_key)
+	
+	# Create display labels
+	week_labels = []
+	for w in weeks:
+		if '-p' in w:
+			num = int(''.join(filter(str.isdigit, w)))
+			week_labels.append(f"{num}-P")
+		else:
+			num = int(''.join(filter(str.isdigit, w)))
+			week_labels.append(str(num))
+	
 	st.sidebar.markdown("## 📚 Select Weeks")
-	selected_numbers = st.sidebar.multiselect("Choose weeks:", options=numeric_weeks, default=numeric_weeks[:2] if len(numeric_weeks) >= 2 else numeric_weeks)
-	selected_weeks = [w for w in weeks if week_num(w) in selected_numbers]
+	selected_labels = st.sidebar.multiselect("Choose weeks:", options=week_labels, default=week_labels[:2] if len(week_labels) >= 2 else week_labels)
+	
+	# Map back to actual week names
+	selected_weeks = []
+	for i, label in enumerate(week_labels):
+		if label in selected_labels:
+			selected_weeks.append(weeks[i])
 
 	# Collect and show week metrics
 	week_info = []
 	all_questions = []
 	for w in selected_weeks:
 		qs = data['weeks'][w]
-		week_info.append({'week': week_num(w), 'questions': qs})
+		# Create display label for metrics
+		if '-p' in w:
+			num = int(''.join(filter(str.isdigit, w)))
+			display_label = f"Week {num}-P"
+		else:
+			num = int(''.join(filter(str.isdigit, w)))
+			display_label = f"Week {num}"
+		week_info.append({'week': display_label, 'questions': qs})
 		for q in qs:
 			all_questions.append(q)
 
@@ -271,7 +300,7 @@ def main():
 	cols = st.columns(min(6, len(week_info)))
 	for i, wk in enumerate(week_info):
 		with cols[i % len(cols)]:
-			st.metric(label=f"Week {wk['week']}", value=f"{len(wk['questions'])} Q")
+			st.metric(label=wk['week'], value=f"{len(wk['questions'])} Q")
 
 	st.markdown(f"**Total Questions:** {len(all_questions)} across {len(selected_weeks)} week{'s' if len(selected_weeks) > 1 else ''}")
 
