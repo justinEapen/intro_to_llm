@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.class
+
+# Streamlit cache
+.streamlit/
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Data not needed on repo
+data/*.csv
+!data/all_weeks_assignments.json
