@@ -422,7 +422,7 @@
             "It penalizes longer documents",
             "It uses hierarchical clustering"
           ],
-          "correct_answer": "It accounts for the informativeness of words"
+          "correct_answer": "It penalizes longer documents"
         },
         {
           "question_id": 4,
