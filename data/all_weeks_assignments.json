@@ -1420,7 +1420,9 @@
           ],
           "correct_answers": [
             "Represent each item x by apex u<sub>x</sub> ; encode x ≺ y as u<sub>x</sub> ≥ u<sub>y</sub> (element-wise).",
-            "Positive loss encourages all dimensions to satisfy the order ; negative loss enforces at least one dimension to violate it."
+            "Positive loss encourages all dimensions to satisfy the order ; negative loss enforces at least one dimension to violate it.",
+            "All cones (and their intersections) have the same measure in this construction.",
+            "This makes modeling negative correlation between sibling types difficult."
           ]
         }
       ]
