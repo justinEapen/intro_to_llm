@@ -914,7 +914,7 @@
             "ToT reduces hallucination by using domain-specific heuristics",
             "ToT eliminates the need for manual prompt engineering."
           ],
-          "correct_answer": "ToT allows backtracking to explore multiple reasoning paths"
+          "correct_answer": "ToT allows backtracking to explore multiple reasoning paths."
         },
         {
           "question_id": 6,
