@@ -767,7 +767,7 @@
             "Span corruption and reconstruction",
             "Predicting the next token"
           ],
-          "correct_answer": "Span corruption and reconstruction and reconstruction"
+          "correct_answer": "Span corruption and reconstruction"
         },
         {
           "question_id": 4,
@@ -832,7 +832,7 @@
           "question_text": "In the previous week, we saw the usage of einsum function in numpy as a generalized operation for performing tensor multiplications. Now, consider two matrices: $A=\\begin{bmatrix}1&5\\\\ 3&7\\end{bmatrix}$ and $B=\\begin{bmatrix}2&-1\\\\ 4&2\\end{bmatrix}$ Then, what is the output of the following numpy operation? `numpy.einsum('ij,ji->', A, B)`",
           "question_type": "NUMERIC",
           "options": [],
-          "correct_answer": "29"
+          "correct_answer": "23"
         }
       ]
     },
